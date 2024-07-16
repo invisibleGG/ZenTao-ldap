@@ -156,7 +156,7 @@ class ldapauthUser extends userModel
             $userID = $this->dao->lastInsertID();
 
             $this->computeUserView($user->account);
-            $this->loadModel('action')->create('user', $userID, 'Created');
+            // $this->loadModel('action')->create('user', $userID, 'Created');
             $this->loadModel('mail');
             if($this->config->mail->mta == 'sendcloud' and !empty($user->email)) $this->mail->syncSendCloud('sync', $user->email, $user->realname);
 
