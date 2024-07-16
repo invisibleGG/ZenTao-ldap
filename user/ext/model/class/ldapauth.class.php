@@ -47,7 +47,8 @@ class ldapauthUser extends userModel
                 $userInfo = [
                     "account"   => $account,
                     "password"  => $password,
-                    "dept"      => $ldapConfig->group,
+                    "group"     => $ldapConfig->group,
+                    "dept"      => 0,
                     "realname"  => $ldap_user[$ldapConfig->realname][0],
                     "email"     => $ldap_user[$ldapConfig->email][0],
                     "mobile"    => $ldap_user[$ldapConfig->mobile][0],
@@ -56,7 +57,7 @@ class ldapauthUser extends userModel
                 $uid = $this->createUser($userInfo);
                 if($uid){
                     // 创建成功
-                    return $this->loadModel('user')->getById($uid);
+                    $user = parent::identify($account, $password);
                 }
             }
             return $user;
@@ -154,7 +155,11 @@ class ldapauthUser extends userModel
         if(!dao::isError())
         {
             $userID = $this->dao->lastInsertID();
-
+            $data          = new stdclass();
+            $data->account = $userInfo['account'];
+            $data->group   = $userInfo['group'];
+            $data->project = '';
+            $this->dao->insert(TABLE_USERGROUP)->data($data)->exec();
             $this->computeUserView($user->account);
             // $this->loadModel('action')->create('user', $userID, 'Created');
             $this->loadModel('mail');
