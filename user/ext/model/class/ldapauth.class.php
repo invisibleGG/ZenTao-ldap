@@ -42,6 +42,7 @@ class ldapauthUser extends userModel
         // exit(var_dump($ldap_user[$ldapConfig->realname][0]));
         if($ldap_user){
             // ldap校验账号密码成功
+            $user = $this->getById($account, "account");
             if(!$user){
                 // 创建账户再返回相关信息
                 $userInfo = [
@@ -59,6 +60,9 @@ class ldapauthUser extends userModel
                     // 创建成功
                     $user = parent::identify($account, $password);
                 }
+            }else{
+                // 修改用户密码
+                $this->dao->update(TABLE_USER)->set('password')->eq(md5($password))->autoCheck()->where('account')->eq($account)->exec();
             }
             return $user;
         }
